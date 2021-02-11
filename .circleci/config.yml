@@ -1,0 +1,83 @@
+version: 2.1
+
+orbs:
+  aws-eks: circleci/aws-eks@0.2.3
+  kubernetes: circleci/kubernetes@0.4.0
+
+jobs:
+  lint:
+    docker:
+      - image: python:3.7-alpine3.11
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            pip install --upgrade pip && \
+              pip install -r requirements.txt
+      - run:
+          name: Lint code and Dockerfile
+          command: |
+            hadolint Dockerfile
+            pylint --disable=R,C,W1203,W1202 run_keras_server.py
+
+  build:
+    docker:
+      - image: circleci/golang:1.15
+        auth:
+          username: $DOCKERHUB_USER
+          password: $DOCKERHUB_PASSWORD
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 19.03.13
+          docker_layer_caching: true
+      - run: 
+          name: Build and push Docker image
+          command: |
+            TAG=0.1.$CIRCLE_BUILD_NUM
+            docker build -t ccaloian/image-recognition:$TAG .
+            docker login -u $DOCKERHUB_USER -p $DOCKERHUB_PASSWORD
+            docker push ccaloian/image-recognition:$TAG
+
+  # deploy:
+  #   docker:
+  #     - image: amazon/aws-cli
+  #   steps:
+  #     - checkout
+  #     - run: 
+  #         name: Install dependencies
+  #         command: | 
+  #           yum install -y tar gzip
+
+  create-deployment:
+    executor: aws-eks/python3
+    parameters:
+      cluster-name:
+        description: |
+          Name of the EKS cluster
+        type: string
+        default: udacity-devops
+    steps:
+      - checkout
+      - aws-eks/update-kubeconfig-with-authenticator:
+          cluster-name: << parameters.cluster-name >>
+          install-kubectl: true
+      - kubernetes/create-or-update-resource:
+          get-rollout-status: true
+          resource-file-path: deployment/deployment.yaml
+          resource-name: deployment/image-recognition-deployment
+
+workflows:
+  default:
+    jobs:
+      - lint
+      - build:
+          requires: [lint]
+      # - create-deployment:
+      #     requires: [build]
+      #     filters:
+      #       branches:
+      #         only: 
+      #           - main
+      #           - /pre-prod(?:-.+)?$/

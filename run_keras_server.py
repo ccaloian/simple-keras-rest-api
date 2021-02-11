@@ -41,6 +41,11 @@ def prepare_image(image, target):
     # return the processed image
     return image
 
+@app.route("/status", methods=["GET"]):
+def status():
+    return f"""{{'status': 'ok', 'model': {model.name}}}"""
+
+
 @app.route("/predict", methods=["POST"])
 def predict():
     # initialize the data dictionary that will be returned from the
@@ -72,6 +77,9 @@ def predict():
 
             # indicate that the request was a success
             data["success"] = True
+
+            # add model name information
+            data["architecture"] = model.name
 
     # return the data dictionary as a JSON response
     return flask.jsonify(data)

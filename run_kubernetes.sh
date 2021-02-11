@@ -12,7 +12,7 @@ kubectl run imagerecognition \
     --labels app=imagerecognition
 
 # wait 60s for the pod to be ready before forwarding
-sleep 120
+sleep 180
 
 # List kubernetes pods
 kubectl get pods
