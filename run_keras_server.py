@@ -41,7 +41,7 @@ def prepare_image(image, target):
     # return the processed image
     return image
 
-@app.route("/status", methods=["GET"]):
+@app.route("/status", methods=["GET"])
 def status():
     return f"""{{'status': 'ok', 'model': {model.name}}}"""
 

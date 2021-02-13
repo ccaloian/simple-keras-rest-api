@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: image-recognition
+  labels:
+    app: image-recognition
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: image-recognition
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: image-recognition
+    spec:
+      containers:
+      - name: image-recognition
+        image: ccaloian/image-recognition
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 80

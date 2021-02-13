@@ -66,7 +66,7 @@ jobs:
       - kubernetes/create-or-update-resource:
           get-rollout-status: true
           resource-file-path: deployment/deployment.yaml
-          resource-name: deployment/image-recognition-deployment
+          resource-name: deployment/image-recognition
 
 workflows:
   default:
@@ -74,10 +74,10 @@ workflows:
       - lint
       - build:
           requires: [lint]
-      # - create-deployment:
-      #     requires: [build]
-      #     filters:
-      #       branches:
-      #         only: 
-      #           - main
-      #           - /pre-prod(?:-.+)?$/
+      - create-deployment:
+          requires: [build]
+          filters:
+            branches:
+              only: 
+                - main
+                - /pre-prod(?:-.+)?$/
