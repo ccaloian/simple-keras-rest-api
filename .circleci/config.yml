@@ -15,7 +15,7 @@ jobs:
           command: |
             pip install --upgrade pip && \
               pip install -r requirements.txt
-            wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v1.22.1/hadolint-Linux-x86_64
+            sudo wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v1.22.1/hadolint-Linux-x86_64
       - run:
           name: Lint code and Dockerfile
           command: |
@@ -78,5 +78,5 @@ workflows:
           filters:
             branches:
               only: 
-                - main
+                - master
                 - /pre-prod(?:-.+)?$/
