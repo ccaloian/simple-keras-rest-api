@@ -38,6 +38,11 @@ jobs:
             docker build -t ccaloian/image-recognition:$TAG .
             docker login -u $DOCKERHUB_USER -p $DOCKERHUB_PASSWORD
             docker push ccaloian/image-recognition:$TAG
+            curl \
+              -H "Content-Type: text/plain" \
+              -H "token:tag_${CIRCLE_WORKFLOW_ID}" \
+              --request PUT \
+              --data "$TAG" https://api.memstash.io/values/tag
 
   create-deployment:
     executor: aws-eks/python3
@@ -55,7 +60,10 @@ jobs:
       - run:
           name: Update deployment file with new image
           command: |
-            TAG=0.1.$CIRCLE_BUILD_NUM
+            TAG=$(curl -s \
+                -H "Content-Type: text/plain" \
+                -H "token:tag_${CIRCLE_WORKFLOW_ID}" \
+                --request GET https://api.memstash.io/values/tag)
             kubectl set image \
               -f deployment/deployment.yml \
               image-recognition="ccaloian/image-recognition:${TAG}" \
