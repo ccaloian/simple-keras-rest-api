@@ -24,7 +24,7 @@ def load_model():
     # load the pre-trained Keras model (here we are using a model
     # pre-trained on ImageNet and provided by Keras, but you can
     # substitute in your own networks just as easily)
-    global model # pylint: disable=global-statement
+    global model 
     model = ResNet50(weights="imagenet")
 
 def prepare_image(image, target):
