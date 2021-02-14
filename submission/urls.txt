@@ -1,0 +1,8 @@
+GitHub URL:
+    * https://github.com/ccaloian/simple-keras-rest-api
+
+Application URL:
+    * http://aa153a963ce3447ea90dea040333edea-1368589394.us-west-2.elb.amazonaws.com:80/predict
+
+Example endpoint invocation:
+    * curl -X POST -F image=@images/dog.jpg http://aa153a963ce3447ea90dea040333edea-1368589394.us-west-2.elb.amazonaws.com:80/predict
